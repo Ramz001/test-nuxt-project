@@ -32,8 +32,12 @@
             <h4 class="footer__nav-title">Информация</h4>
             <ul class="footer__nav-list">
               <li><a href="#" class="footer__nav-link">Преимущества</a></li>
-              <li><a href="#" class="footer__nav-link">Гарантия и безопасность</a></li>
-              <li><a href="#" class="footer__nav-link">Индивидуальный заказ</a></li>
+              <li>
+                <a href="#" class="footer__nav-link">Гарантия и безопасность</a>
+              </li>
+              <li>
+                <a href="#" class="footer__nav-link">Индивидуальный заказ</a>
+              </li>
               <li><a href="#" class="footer__nav-link">Акции</a></li>
             </ul>
           </div>
@@ -49,15 +53,6 @@
           </div>
         </nav>
       </div>
-
-      <div class="footer__bottom">
-        <p class="footer__copyright">2025 © Kitogo. Все права защищены</p>
-        <div class="footer__bottom-links">
-          <a href="#" class="footer__bottom-link">Политика конфеденциальности</a>
-          <span class="footer__bottom-divider"></span>
-          <a href="#" class="footer__bottom-link">Дизайн и разработка — tapir.digital</a>
-        </div>
-      </div>
     </div>
   </footer>
 </template>
@@ -66,12 +61,11 @@
 .footer {
   background-color: $color-black;
   color: $color-white;
-  padding: $spacing-2xl 0 $spacing-xl;
+  padding: 3.75rem 1.25rem;
 
   @media (min-width: $breakpoint-md) {
-    padding: $spacing-3xl 0 $spacing-xl;
+    padding: 6.25rem 3.75rem;
   }
-
   &__container {
     display: flex;
     flex-direction: column;
@@ -121,53 +115,6 @@
 
     &:hover {
       color: $color-gray-400;
-    }
-  }
-
-  &__bottom {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-md;
-    padding-top: $spacing-xl;
-    border-top: 1px solid $color-gray-800;
-
-    @media (min-width: $breakpoint-md) {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-    }
-  }
-
-  &__copyright {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
-  }
-
-  &__bottom-links {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: $spacing-sm;
-  }
-
-  &__bottom-link {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
-    transition: color $transition-fast;
-
-    &:hover {
-      color: $color-white;
-    }
-  }
-
-  &__bottom-divider {
-    display: none;
-
-    @media (min-width: $breakpoint-md) {
-      display: block;
-      width: 1px;
-      height: 12px;
-      background-color: $color-gray-700;
     }
   }
 }

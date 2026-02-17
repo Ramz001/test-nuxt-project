@@ -1,56 +1,77 @@
 <script setup lang="ts">
-import type { ProductsResponse } from '~/types/product'
+import type { ProductsResponse } from "~/types/product";
 
 useHead({
-  title: 'Каталог | Kitogo',
-})
+  title: "Каталог | Kitogo",
+});
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
-// SSR: fetch first page on server
-const { data: initialData, error: initialError } = await useFetch<ProductsResponse>(
-  `${config.public.apiBase}/products`,
-  {
-    params: { page: 1 },
-    key: 'products-initial',
-  }
-)
+const {
+  data,
+  error: fetchError,
+  refresh,
+} = await useFetch<ProductsResponse>(`${config.public.apiBase}/products`, {
+  params: { page: 1 },
+  key: "products-initial",
+  server: true,
+  lazy: false,
+  default: () => ({
+    products: [],
+    currentPage: 1,
+    totalPages: 1,
+  }),
+});
 
-// Reactive state
-const products = ref(initialData.value?.products ?? [])
-const currentPage = ref(initialData.value?.currentPage ?? 1)
-const totalPages = ref(initialData.value?.totalPages ?? 1)
-const isLoading = ref(false)
-const error = ref<Error | null>(initialError.value as Error | null)
+const products = ref<ProductsResponse["products"]>([]);
+const currentPage = ref(1);
+const totalPages = ref(1);
+const isLoading = ref(false);
+const loadError = ref<Error | null>(null);
 
-const hasMore = computed(() => currentPage.value < totalPages.value)
+watchEffect(() => {
+  if (!data.value) return;
 
-// Load more products
+  products.value = data.value.products;
+  currentPage.value = data.value.currentPage;
+  totalPages.value = data.value.totalPages;
+});
+
+const hasMore = computed(() => currentPage.value < totalPages.value);
+
 const loadMore = async () => {
-  if (isLoading.value || !hasMore.value) return
+  if (isLoading.value || !hasMore.value) return;
 
-  isLoading.value = true
-  error.value = null
+  isLoading.value = true;
+  loadError.value = null;
 
   try {
-    const data = await $fetch<ProductsResponse>(`${config.public.apiBase}/products`, {
-      params: { page: currentPage.value + 1 },
-    })
+    const nextPage = currentPage.value + 1;
 
-    products.value = [...products.value, ...data.products]
-    currentPage.value = data.currentPage
-    totalPages.value = data.totalPages
+    const response = await $fetch<ProductsResponse>(
+      `${config.public.apiBase}/products`,
+      {
+        params: { page: nextPage },
+      },
+    );
+
+    products.value.push(...response.products);
+    currentPage.value = response.currentPage;
+    totalPages.value = response.totalPages;
   } catch (e) {
-    error.value = e as Error
+    loadError.value = e as Error;
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
-// Retry on error
-const retry = () => {
-  loadMore()
-}
+const retryInitial = async () => {
+  await refresh();
+};
+
+const retryLoadMore = () => {
+  loadMore();
+};
 </script>
 
 <template>
@@ -60,15 +81,17 @@ const retry = () => {
         <h1 class="catalog__title">КАТАЛОГ</h1>
       </header>
 
-      <!-- Initial error state (SSR) -->
-      <div v-if="initialError && products.length === 0" class="catalog__error">
+      <div v-if="fetchError && products.length === 0" class="catalog__error">
         <p class="catalog__error-text">Произошла ошибка, попробуйте позже</p>
-        <button type="button" class="catalog__retry-button" @click="retry">
+        <button
+          type="button"
+          class="catalog__retry-button"
+          @click="retryInitial"
+        >
           Повторить
         </button>
       </div>
 
-      <!-- Products grid -->
       <div v-else class="catalog__content">
         <div class="catalog__grid">
           <ProductCard
@@ -78,26 +101,23 @@ const retry = () => {
           />
         </div>
 
-        <!-- Loading state -->
         <div v-if="isLoading" class="catalog__loading">
           <span class="catalog__loading-text">Загрузка...</span>
         </div>
 
-        <!-- Error state after loading -->
-        <div v-else-if="error" class="catalog__error">
-          <p class="catalog__error-text">Произошла ошибка, попробуйте позже</p>
-          <button type="button" class="catalog__retry-button" @click="retry">
+        <div v-else-if="loadError" class="catalog__error">
+          <p class="catalog__error-text">Ошибка загрузки страницы</p>
+          <button
+            type="button"
+            class="catalog__retry-button"
+            @click="retryLoadMore"
+          >
             Повторить
           </button>
         </div>
 
-        <!-- Load more button -->
         <div v-else-if="hasMore" class="catalog__actions">
-          <button
-            type="button"
-            class="catalog__load-more"
-            @click="loadMore"
-          >
+          <button type="button" class="catalog__load-more" @click="loadMore">
             Показать еще
           </button>
         </div>
@@ -175,7 +195,9 @@ const retry = () => {
     color: $color-black;
     background-color: $color-white;
     border: 1px solid $color-gray-300;
-    transition: border-color $transition-fast, background-color $transition-fast;
+    transition:
+      border-color $transition-fast,
+      background-color $transition-fast;
 
     &:hover {
       border-color: $color-black;

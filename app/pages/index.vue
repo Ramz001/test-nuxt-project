@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Home page
 useHead({
-  title: 'Главная | Kitogo',
-})
+  title: "Главная | Kitogo",
+});
 </script>
 
 <template>
@@ -10,9 +10,7 @@ useHead({
     <section class="hero">
       <div class="hero__container container">
         <h1 class="hero__title">ТЕСТОВОЕ ЗАДАНИЕ</h1>
-        <NuxtLink to="/catalog" class="hero__button">
-          В каталог
-        </NuxtLink>
+        <NuxtLink to="/catalog" class="hero__button"> В каталог </NuxtLink>
       </div>
     </section>
   </div>
