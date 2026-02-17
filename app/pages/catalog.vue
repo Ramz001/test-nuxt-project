@@ -175,7 +175,6 @@ const retry = () => {
     color: $color-black;
     background-color: $color-white;
     border: 1px solid $color-gray-300;
-    border-radius: $radius-md;
     transition: border-color $transition-fast, background-color $transition-fast;
 
     &:hover {
@@ -217,8 +216,8 @@ const retry = () => {
     font-weight: $font-weight-normal;
     color: $color-white;
     background-color: $color-black;
-    border-radius: $radius-md;
     transition: background-color $transition-fast;
+    border: dotted 1px $color-gray-600;
 
     &:hover {
       background-color: $color-gray-800;

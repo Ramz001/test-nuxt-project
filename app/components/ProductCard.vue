@@ -45,11 +45,9 @@ const formatPriceX2 = (price: number): string => {
         </button>
       </div>
       <div class="product-card__content">
-        <div class="product-card__price">{{ formatPrice(product.price) }}</div>
-        <div class="product-card__price-x2">
-          <span class="product-card__price-x2-badge">{{
-            formatPriceX2(priceX2)
-          }}</span>
+        <div class="product-card__prices">
+          <div class="product-card__price">{{ formatPrice(product.price) }}</div>
+          <span class="product-card__price-x2-badge">{{ formatPriceX2(priceX2) }}</span>
         </div>
         <h3 class="product-card__name">{{ product.name }}</h3>
       </div>
@@ -114,9 +112,22 @@ const formatPriceX2 = (price: number): string => {
     gap: $spacing-xs;
   }
 
+  &__prices {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-xs;
+
+    @media (min-width: $breakpoint-md) {
+      flex-direction: row;
+      align-items: center;
+      gap: $spacing-sm;
+    }
+  }
+
   &__price {
     font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-bold;
     color: $color-black;
 
     @media (min-width: $breakpoint-md) {
@@ -124,23 +135,18 @@ const formatPriceX2 = (price: number): string => {
     }
   }
 
-  &__price-x2 {
-    display: flex;
-  }
-
   &__price-x2-badge {
     display: inline-block;
     padding: 4px 8px;
     font-size: $font-size-xs;
-    font-weight: $font-weight-normal;
+    font-weight: $font-weight-medium;
     color: $color-white;
     background-color: $color-black;
-    border-radius: $radius-sm;
   }
 
   &__name {
     font-size: $font-size-xs;
-    font-weight: $font-weight-normal;
+    font-weight: $font-weight-medium;
     color: $color-gray-600;
     line-height: $line-height-normal;
     margin-top: $spacing-xs;
